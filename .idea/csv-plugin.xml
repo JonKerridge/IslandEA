@@ -10,6 +10,27 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\src\main\groovy\maxOnes\islandMaxOnesMany2048.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\src\main\groovy\maxOnes\islandMaxOnesMany256.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\src\main\groovy\maxOnes\islandMaxOnesMany512.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\src\main\groovy\maxOnes\islandMaxOnesSingle.csv">
           <value>
             <Attribute>
@@ -17,7 +38,28 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\src\main\groovy\queens\island16.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\src\main\groovy\queens\island8.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\src\main\groovy\queens\islandQueensSingle.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\src\main\groovy\tsp\islandTSP42Single.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

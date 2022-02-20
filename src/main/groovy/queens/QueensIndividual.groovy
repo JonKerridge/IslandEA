@@ -41,10 +41,10 @@ class QueensIndividual implements IslandIndividual{
       rightDiagonal[i] = 0
     }
     for (int i in 1 .. geneLength) {
-      int idxL = i + chromosome[i] - 1
+      int idxL = i + (int)chromosome[i] - 1
 //      println "idxl = $idxL"
       leftDiagonal[idxL]++
-      int idxR = geneLength - i + chromosome[i]
+      int idxR = geneLength - i + (int)chromosome[i]
       rightDiagonal[idxR]++
 //            rightDiagonal[N-i+board[i]]++
     }
@@ -79,10 +79,10 @@ class QueensIndividual implements IslandIndividual{
 
   @Override
   BigDecimal getFitness() {
-    return fitness as BigDecimal
+    return fitness
   }
 
   String toString(){
-    return "Individual length: $geneLength, Fit: $fitness, $chromosome"
+    return "$fitness"
   }
 }

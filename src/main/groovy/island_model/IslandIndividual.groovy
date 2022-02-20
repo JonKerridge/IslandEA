@@ -6,17 +6,17 @@ package island_model
  *
  * The user is required to create TWO public constructors.<br>
  * One which actually populates an individual<br>
- * Individual ( int geneLength, Random rng, List evaluateData)<br>
+ * Individual ( int geneLength, Random rng, List distances)<br>
  *
  * The other creates an empty individual<br>
- * Individual (int geneLength, List evaluateData)<br>
+ * Individual (int geneLength, List distances)<br>
  *
- * if omitted evaluateData will default to null<br>
+ * if omitted distances will default to null<br>
  *
  * where <br>
  * geneLength is the number of data points in a chromosome<br>
  * rng is the random number generator used by the node to which this Individual belongs <br>
- * evaluateData is any data used in the evaluation of the fitness function or null otherwise<br>
+ * distances is any data used in the evaluation of the fitness function or null otherwise<br>
  */
 interface IslandIndividual {
 

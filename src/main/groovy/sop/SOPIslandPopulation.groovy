@@ -1,11 +1,11 @@
-package tsp
+package sop
 
 import island_model.IslandIndividual
 import island_model.IslandPopulation
 
 
-class TSPIslandPopulation implements IslandPopulation{
-  List <TSPIslandIndividual> population
+class SOPIslandPopulation implements IslandPopulation{
+  List <SOPIslandIndividual> population
   int individuals
   int geneLength
   double crossoverProbability
@@ -15,10 +15,11 @@ class TSPIslandPopulation implements IslandPopulation{
   Random rng
   int nodeID
 
-  List <List <Integer>> distances
+  List <List> distances = []
+  Map precedences
 
 
-  TSPIslandPopulation(int individuals,
+  SOPIslandPopulation(int individuals,
                       int geneLength,
                       double crossoverProbability,
                       double mutateProbability,
@@ -35,9 +36,9 @@ class TSPIslandPopulation implements IslandPopulation{
     this.convergenceLimit = convergenceLimit
     population = []
     this.nodeID = nodeId
-    processDataFile() // must be done first so that it can bu used to evaluate individual fitness
+    processDataFile() // must be done first so that it can be used to evaluate individual fitness
     for ( i in 0 ..< individuals){
-      population << new TSPIslandIndividual(geneLength, rng, distances)
+      population << new SOPIslandIndividual(geneLength, rng, distances, precedences)
     }
 
   }
@@ -121,19 +122,19 @@ class TSPIslandPopulation implements IslandPopulation{
     return subscripts
   }
 
-  static def extractParts(Integer start, Integer end, TSPIslandIndividual source){
+  static def extractParts(Integer start, Integer end, SOPIslandIndividual source){
     // copies source[start ]..< source[end] into result
     List<Integer> result = []
     for ( i in start ..< end) result << source.route[i]
     return result
   }
 
-  List <TSPIslandIndividual> offspring
+  List <SOPIslandIndividual> offspring
 
   static def doMultiPointCrossover(List <List <Integer>>  partsOf1,
                                    List <List <Integer>>  partsOf2,
-                                   TSPIslandIndividual child,
-                                   int crossoverPoints){
+                                   SOPIslandIndividual child,
+                                   int crossoverPoints, int geneLength){
     /*
     the number of crossover Points is even
     The number of subsections in partsOf1 is points + 1
@@ -183,7 +184,7 @@ class TSPIslandPopulation implements IslandPopulation{
     The parts are appended to a 1 value as the zeroth element of a route is always 1
     The final updated version of the individual's route is obtained by flatten()ing
      */
-    child.route = [1]
+    child.route = [0, 1]
     bitOf1 = 0
     bitOf2 = 0
     while ( bitOf1 < crossoverPoints) {
@@ -193,16 +194,16 @@ class TSPIslandPopulation implements IslandPopulation{
       bitOf2++
     }
     child.route << (partsOf1[crossoverPoints] )
-    child.route << 1  // last city is always 1
+    child.route << [geneLength] // last city is always 1
     child.route = child.route.flatten() as List<Integer>
 //    child.evaluateFitness() // for printing only?
 //    println "\nChild $child "
   }
 
-  void replace (int popIndex, TSPIslandIndividual replacement){
+  void replace (int popIndex, SOPIslandIndividual replacement){
     for ( g in 0 .. geneLength)
-      ((TSPIslandIndividual)population[popIndex]).route[g] = replacement.route[g]
-    ((TSPIslandIndividual)population[popIndex]).fitness = replacement.fitness
+      ((SOPIslandIndividual)population[popIndex]).route[g] = replacement.route[g]
+    ((SOPIslandIndividual)population[popIndex]).fitness = replacement.fitness
   }
 
 
@@ -217,19 +218,19 @@ class TSPIslandPopulation implements IslandPopulation{
     List <Integer> parents = selectParents()
     List <Integer> possibleOverwrites = selectLeastFit()
     // must ensure crossover points are not 0 and geneLength, which are both fixed at 1
-    List <Integer> randoms = [1]  // first flexible city is in route[1]
-    for (n in 1 .. crossoverPoints ){
-      int c = rng.nextInt(geneLength-1) + 1
-      while ( randoms.contains(c)) c = rng.nextInt(geneLength-1) + 1
+    List <Integer> randoms = [2]  // first flexible city is in route[2]
+    for (n in 1..crossoverPoints) {
+      int c = rng.nextInt(geneLength -3) + 2
+      while (randoms.contains(c)) c = rng.nextInt(geneLength -3) + 2
       randoms << c
     }
+    randoms << geneLength  // last city is always fixed and must be ignored
     randoms = randoms.sort()
-    randoms << geneLength - 1// last city is always 1 and must be ignored
 //    println "random points is $randoms"
     // randoms contains a sorted list of random points
     //offspring holds the results of the reproduction
     offspring = []
-    for ( i in 0 .. 1) offspring[i] = new TSPIslandIndividual(geneLength, distances)
+    for ( i in 0 .. 1) offspring[i] = new SOPIslandIndividual(geneLength, distances, precedences)
     List <List <Integer>> partsOf1 = []   // all the parts of first parent
     for ( i in 0 .. crossoverPoints){
       partsOf1[i] = extractParts(randoms[i], randoms[i+1], population[parents[0]])
@@ -243,7 +244,7 @@ class TSPIslandPopulation implements IslandPopulation{
       section = section + 2
     }
 //    println "parts 0: $partsOf1, $partsOf2"
-    doMultiPointCrossover(partsOf1, partsOf2, offspring[0], crossoverPoints)
+    doMultiPointCrossover(partsOf1, partsOf2, offspring[0], crossoverPoints, geneLength)
 
     // now do it the other way round between the parents and to a different child
     partsOf1 = []
@@ -257,7 +258,7 @@ class TSPIslandPopulation implements IslandPopulation{
       section = section + 2   // we take the odd sections for processing
     }
 //    println "parts 1: $partsOf1, $partsOf2"
-    doMultiPointCrossover(partsOf1, partsOf2, offspring[1],crossoverPoints)
+    doMultiPointCrossover(partsOf1, partsOf2, offspring[1],crossoverPoints, geneLength)
     //println "$nodeID - undertaken both crossovers"
     // now do mutations on the offspring
     if (rng.nextDouble() < mutateProbability) {
@@ -268,8 +269,8 @@ class TSPIslandPopulation implements IslandPopulation{
       offspring[1].mutate(rng)
       //println "$nodeID - mutation 2 done"
     }
-    offspring[0].evaluateFitness(distances)
-    offspring[1].evaluateFitness(distances)
+    offspring[0].evaluateFitness(distances, precedences)
+    offspring[1].evaluateFitness(distances, precedences)
 
     // order offspring so index 0 is the better
     if (offspring[1].getFitness() < offspring[0].getFitness()) offspring.swap(0,1)
@@ -347,7 +348,7 @@ class TSPIslandPopulation implements IslandPopulation{
   void includeImmigrants(List<IslandIndividual> incomers, List<Integer> migrantIndices) {
     assert incomers.size() == migrantIndices.size() : "includeImmigrants: Mismatch in sizes of input Lists"
     for ( m in 0 ..< migrantIndices.size())
-      population[migrantIndices[m]] = incomers[m] as TSPIslandIndividual
+      population[migrantIndices[m]] = incomers[m] as SOPIslandIndividual
   }
 
   /**
@@ -386,24 +387,31 @@ class TSPIslandPopulation implements IslandPopulation{
   @Override
   void processDataFile() {
 //    println "process $dataFileName"
-    distances = []
+    int cities
+    precedences = [:]
     distances[0] = [0]  // no city with subscript 0
     int row
     row = 1
-    new File(dataFileName).eachLine {line ->
-//      println "$line"
-      distances[row]= [0]
-      List <String> values = line.tokenize(',')
-      for ( v in 0 ..< values.size()) distances[row][v+1] = Integer.parseInt(values[v])
+    new File(dataFileName).eachLine { line ->
+      distances[row] = [0]
+      List<String> values = line.tokenize()
+      for (v in 0..<values.size()) distances[row] << Integer.parseInt(values[v])
       row += 1
     }
-    int rows = distances.size()
-    for ( r in 1 ..< rows)
-      for ( rc in r+1 ..< rows)
-        distances[r][rc] = distances[rc][r]
-
-//    println "\nSquare : $rows\n"
+    cities = distances[1].size() -1
+    for (r in 1 ..< cities){
+      for ( c in 2 .. cities){
+        if (distances[r][c] == -1){
+          if (precedences.get(r) == null )
+            precedences.put(r, [c])
+          else
+            precedences.put(r, precedences.get(r) << c)
+        }
+      }
+    }
+//    println "distances in process data file"
 //    distances.each{println "$it"}
-
+//    println "precedences"
+//    precedences.each{k,v -> println "$k is after $v"}
   }
 }
