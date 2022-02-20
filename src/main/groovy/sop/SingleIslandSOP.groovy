@@ -27,7 +27,7 @@ sopSpecification.seeds = [3, 211, 419, 631, 839, 1039, 1249, 1451,
 RingTopology topology = new RingTopology()
 
 
-String outFile = "./SingleSOP7.csv"
+String outFile = "./IslandSOP7.csv"
 def fw = new FileWriter(outFile, true)
 def bw = new BufferedWriter(fw)
 def printWriter = new PrintWriter(bw)

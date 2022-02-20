@@ -105,8 +105,8 @@ class IslandProblemSpecification {
 //    return "$nodes, $instances, $populationPerNode, " +
 //        "$geneLength, $migrationInterval, $migrationSize, $crossoverPoints, " +
 //        "$maxGenerations, $crossoverProbability, $mutationProbability, $convergenceLimit, $minOrMax, "
-    return "$nodes, $populationPerNode, $geneLength, " +
-        "$migrationInterval, $migrationSize, " +
-        "$crossoverPoints, $crossoverProbability, $mutationProbability"
+    return "$dataFileName, $nodes, $populationPerNode, $geneLength, " +
+        "$crossoverPoints, $crossoverProbability, " +
+        "$mutationProbability, $migrationInterval, $migrationSize, $convergenceLimit, $maxGenerations"
   }
 }

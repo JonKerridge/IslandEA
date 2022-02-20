@@ -59,6 +59,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\src\main\groovy\sop\IslandSOP7.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\src\main\groovy\sop\SingleSOP7.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\src\main\groovy\tsp\islandTSP42Single.csv">
           <value>
             <Attribute>
